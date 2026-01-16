@@ -1638,38 +1638,53 @@ cell is truncated."
         str)
     org))
 
+(defun ctbl:get-canonical-char-width ()
+  "Obtain the pixel width of the next standard character (typically a space or 'a') in the current frame.
+This serves as the baseline for converting 'column width (number of characters)' to `pixel width.'"
+  (frame-char-width))
+
+(defun ctbl:get-string-pixel-width (str)
+  "Calculate the actual pixel width of the string."
+  (if (display-graphic-p)
+      (string-pixel-width str)
+    ;; Revert to string-width in terminal mode.
+    (* (string-width str) (frame-char-width))))
+
+(defun ctbl:make-pixel-spacer (pixel-width)
+  "Generate a placeholder of specified pixel width."
+  (propertize " " 'display (list 'space :width (list pixel-width))))
+
 (defun ctbl:format-right (width string &optional padding)
   "[internal] Format STRING, padding on the left with the character PADDING."
-  (let* ((padding (or padding ?\ ))
-         (cnt (or (and string
-                       (ctbl:format-truncate string width t))
-                  ""))
-         (len (string-width cnt))
-         (margin (max 0 (- width len))))
-    (concat (make-string margin padding) cnt)))
+  (let* ((string (or string ""))
+         (char-w (ctbl:get-canonical-char-width))
+         (target-pixel-width (* width char-w))
+         (str-pixel-width (ctbl:get-string-pixel-width string))
+         (margin-pixel (max 0 (- target-pixel-width str-pixel-width))))
+    (concat (ctbl:make-pixel-spacer margin-pixel) string)))
 
 (defun ctbl:format-center (width string &optional padding)
   "[internal] Format STRING in the center, padding on the both
 sides with the character PADDING."
-  (let* ((padding (or padding ?\ ))
-         (cnt (or (and string
-                       (ctbl:format-truncate string width t))
-                  ""))
-         (len (string-width cnt))
-         (margin (max 0 (/ (- width len) 2))))
-    (concat
-     (make-string margin padding) cnt
-     (make-string (max 0 (- width len margin)) padding))))
+  (let* ((string (or string ""))
+         (char-w (ctbl:get-canonical-char-width))
+         (target-pixel-width (* width char-w))
+         (str-pixel-width (ctbl:get-string-pixel-width string))
+         (total-margin (max 0 (- target-pixel-width str-pixel-width)))
+         (left-margin (/ total-margin 2))
+         (right-margin (- total-margin left-margin)))
+    (concat (ctbl:make-pixel-spacer left-margin)
+            string
+            (ctbl:make-pixel-spacer right-margin))))
 
 (defun ctbl:format-left (width string &optional padding)
   "[internal] Format STRING, padding on the right with the character PADDING."
-  (let* ((padding (or padding ?\ ))
-         (cnt (or (and string
-                       (ctbl:format-truncate string width t))
-                  ""))
-         (len (string-width cnt))
-         (margin (max 0 (- width len))))
-    (concat cnt (make-string margin padding))))
+  (let* ((string (or string ""))
+         (char-w (ctbl:get-canonical-char-width))
+         (target-pixel-width (* width char-w))
+         (str-pixel-width (ctbl:get-string-pixel-width string))
+         (margin-pixel (max 0 (- target-pixel-width str-pixel-width))))
+    (concat string (ctbl:make-pixel-spacer margin-pixel))))
 
 (defun ctbl:sort-string-lessp (i j)
   "[internal] String comparator."
