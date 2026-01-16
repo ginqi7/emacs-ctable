@@ -1,0 +1,41 @@
+# Commit log Please follow the format below, ensuring there is a space after the colon.
+# 
+# <type>: <subject> {required}
+# 
+# <body> {optional}
+# 
+# <footer> {Optional}
+# 
+# Example
+# feat: implementation login api function
+#
+# finished login module and integration with server login api
+#
+# Closes OR-xxxx 
+# 
+# <Type>
+# Please adhere to the following tags
+# feat: New feature
+# fix: Bug fix
+# docs: Documentation change
+# style: Code formatting change
+# refactor: Code restructuring
+# perf: Performance improvement
+# test: Add test code
+# build: Change build tools
+# ci: CI-related configuration
+# add: Add non-functional files
+# 3rd: Add third-party components
+# chore: Like spelling errors
+# 
+# <Subject>
+# Briefly describe the factors influencing this change.
+# 
+# <Body>
+# Please provide the specific revision details, with as much detail as possible.
+# Specific modification details should be as detailed as possible.
+# 
+# <Footer>
+# To close a specific issue or bug, use Closes PROJECT-1, Resolves PROJECT-1, or Fixes PROJECT-1.
+# For specific details, please refer to https://docs.gitlab.com/ee/user/project/integrations/jira.html.
+#
